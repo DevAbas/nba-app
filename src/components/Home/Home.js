@@ -4,7 +4,7 @@ import NewsList from '../Widgets/NewsList/NewsList';
 import 'react-bootstrap';
 
 const Home = () => (
-  <div className='container'>
+  <div className='container pt-25'>
     <div className="row">
       <Slider 
         type="featured"
@@ -13,14 +13,14 @@ const Home = () => (
         settings={{
           dots: false
         }}
-        grid="col-md-7"
+        grid="col-md-6"
       />
       <NewsList
         type="card"
-        start={3}
+        start={0}
         amount={3}
         loadMore={true}
-        grid="col-md-5"
+        grid="col-md-6 media-wrapper"
       />
     </div>
   </div>

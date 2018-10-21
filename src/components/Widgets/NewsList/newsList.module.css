@@ -1,3 +1,11 @@
-/* .newsList {
-  float: left;
-} */
+.newsList_wrapper {
+  box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: all .5s ease-out;
+}
+
+.newsList_wrapper_enter {
+  opacity: 1;
+  transform: translateY(0);
+}
