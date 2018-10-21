@@ -2,6 +2,7 @@
   display: none;
   flex-direction: column;
   justify-content: space-around;
+  float: right;
   width: 30px;
   height: 24px;
   background: transparent;

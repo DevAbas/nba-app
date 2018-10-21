@@ -3,23 +3,17 @@
   height: 50px;
   background: #111;
   overflow: auto;
-  display: flex;
-}
-
-.logo {
-  display: flex;
-  margin-left: 1rem;
-  align-items: center;
-}
-
-.spacer {
-  flex: 1;
 }
 
 .navbar {
-  display: flex;
   height: 100%;
-  align-items: center;
+  line-height: 50px;
+  float: right;
+}
+
+.logo {
+  display: block;
+  line-height: 50px;
 }
 
 .navbar ul {

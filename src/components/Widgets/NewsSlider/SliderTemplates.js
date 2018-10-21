@@ -35,8 +35,8 @@ const SliderTemplates = props => {
         return template = null;
   }
   return (
-    <Slick {...settings}>
-      {template}
+    <Slick {...settings} className={props.grid}>
+      { template }
     </Slick>
   )
 }

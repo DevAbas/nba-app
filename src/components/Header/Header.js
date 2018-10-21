@@ -24,7 +24,7 @@ class Header extends Component {
   }
 
   logo = () => (
-    <Link to="/">
+    <Link to="/" className={styles.logo}>
       <img src="/images/nba_logo.png" alt="nba logo"/>
     </Link>
   )
@@ -55,21 +55,26 @@ class Header extends Component {
       ]
     return (
       <header className={styles.header}>
-        <div className={styles.logo}>
-          {this.logo()}
+        <div className="container">
+          <div className="row">
+            <div className="col-md-2 col-sm-4 col-xs-2">
+              {this.logo()}
+            </div>
+            <div className="col-md-10">
+              <nav className={styles.navbar}>
+                <ul>
+                  { menuItems.map((item, i) => (
+                    <li key={i}>
+                      <Link to={`${item.link}`}>{item.text}</Link>
+                    </li>
+                  )) }
+                </ul>
+              </nav>
+              <DrawerToggleButton drawerToggle={this.sideDrawerClickHandler} />
+            </div>
+          </div>
         </div>
         <SideDrawer menuItems={menuItems} show={this.state.showSideMenu} />
-        <div className={styles.spacer} />
-        <nav className={styles.navbar}>
-          <ul>
-            { menuItems.map((item, i) => (
-              <li key={i}>
-                <Link to={`${item.link}`}>{item.text}</Link>
-              </li>
-            )) }
-          </ul>
-        </nav>
-        <DrawerToggleButton drawerToggle={this.sideDrawerClickHandler} />
         <Backdrop show={this.state.showSideMenu} close={this.closeDrawerClickHandler} />
       </header>
     )
