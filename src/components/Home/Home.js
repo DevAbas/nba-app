@@ -1,6 +1,7 @@
 import React from 'react';
 import Slider from '../Widgets/NewsSlider/Slider';
 import NewsList from '../Widgets/NewsList/NewsList';
+import VideosList from '../Widgets/VideosList/VideosList';
 import 'react-bootstrap';
 
 const Home = () => (
@@ -23,6 +24,13 @@ const Home = () => (
         grid="col-md-6 media-wrapper"
       />
     </div>
+    <VideosList
+      type="card"
+      title={true}
+      loadMore={true}
+      start={0}
+      amount={3}
+    />
   </div>
 );
 
