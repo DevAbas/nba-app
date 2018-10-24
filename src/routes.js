@@ -5,6 +5,7 @@ import Layout from './hoc/Layout/Layout';
 import Home from './components/Home/Home';
 import NewsArticle from './components/Articles/News/Post/'
 import VideosArticle from './components/Articles/Videos/Post/';
+import NewsMain from './components/Articles/News/Main/';
 
 
 const Routes = () => (
@@ -13,6 +14,7 @@ const Routes = () => (
       <Route path="/" exact component={Home} />
       <Route path="/articles/:id" exact component={NewsArticle} />
       <Route path="/videos/:id" exact component={VideosArticle} />
+      <Route path="/news" exact component={NewsMain} />
     </Switch>
   </Layout>
 );

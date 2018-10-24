@@ -29,6 +29,14 @@ a {
   border-bottom: 2px solid #111;
 }
 
+.media img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  float: left;
+  margin-right: 8px;
+}
+
 .media-body a {
   color: #333;
   font-size: 17px;
@@ -49,3 +57,4 @@ a {
 .badge-primary {
   background-color: #007bff; 
 }
+
