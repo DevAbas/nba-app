@@ -24,13 +24,15 @@ const Home = () => (
         grid="col-md-6 media-wrapper"
       />
     </div>
-    <VideosList
+    {/*<VideosList
       type="card"
       title={true}
       loadMore={true}
       start={0}
       amount={3}
     />
+    */}
+      
   </div>
 );
 
