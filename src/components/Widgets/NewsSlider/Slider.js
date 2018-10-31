@@ -24,7 +24,6 @@ class Slider extends Component {
   
   
   render() {
-    console.log(this.state.news)
     return (
       <React.Fragment>
         <SliderTemplates 
