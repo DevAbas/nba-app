@@ -7,6 +7,7 @@ import NewsArticle from './components/Articles/News/Post/'
 import VideosArticle from './components/Articles/Videos/Post/';
 import NewsMain from './components/Articles/News/Main/';
 import VideosMain from './components/Articles/Videos/Main/';
+import SignIn from './components/SignIn/SignIn';
 
 
 const Routes = () => (
@@ -17,6 +18,7 @@ const Routes = () => (
       <Route path="/videos/:id" exact component={VideosArticle} />
       <Route path="/news" exact component={NewsMain} />
       <Route path="/videos" exact component={VideosMain} />
+      <Route path="/sign-in" exact component={SignIn} />
     </Switch>
   </Layout>
 );
