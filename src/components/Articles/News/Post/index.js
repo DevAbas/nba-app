@@ -26,18 +26,7 @@ class NewsArticle extends Component {
             })
           })
       })
-    // axios.get(`${URL}/articles?id=${articelId}`)
-    //   .then(response => {
-    //     let article = response.data[0];
 
-    //     axios.get(`${URL}/teams?id=${article.team}`)
-    //       .then(response => {
-    //         this.setState({
-    //           article,
-    //           team: response.data 
-    //         })
-    //       })
-    //   })
   }
 
   render() {

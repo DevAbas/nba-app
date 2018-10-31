@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import { URL } from '../../../../config';
+import { firebaseDB, firebaseLooper, firebaseTeams } from '../../../../firebase';
 import Header from './Header';
 import VideosRelated from '../../../Widgets/VideosList/VideosRelated/VideosRelated';
 import styles from '../../articles.module.css';
@@ -15,35 +14,48 @@ class NewsArticle extends Component {
   }
 
   componentWillMount(){
-    axios.get(`${URL}/videos?id=${this.props.match.params.id}`)
-    .then( response => {
-        let video = response.data[0];
+    firebaseDB.ref(`videos/${this.props.match.params.id}`).once('value')
+      .then(snapshot => {
+        let video = snapshot.val();
 
-        axios.get(`${URL}/teams?id=${video.team}`)
-        .then( response => {
-            this.setState({
+        firebaseTeams.orderByChild("teamId").equalTo(video.team).once('value')
+          .then(snapshot => {
+              const team = firebaseLooper(snapshot);
+              this.setState({
                 video,
-                team:response.data
-            });
-            this.getRelated();
-        })
-    })
+                team
+              })
+          })
+      })
+    // axios.get(`${URL}/videos?id=${this.props.match.params.id}`)
+    // .then( response => {
+    //     let video = response.data[0];
+
+    //     axios.get(`${URL}/teams?id=${video.team}`)
+    //     .then( response => {
+    //         this.setState({
+    //             video,
+    //             team:response.data
+    //         });
+    //         this.getRelated();
+    //     })
+    // })
 }
 
 getRelated = () => {
    
-    axios.get(`${URL}/teams`)
-    .then( response =>{
-        let teams = response.data
+    // axios.get(`${URL}/teams`)
+    // .then( response =>{
+    //     let teams = response.data
 
-        axios.get(`${URL}/videos?q=${this.state.teams.city}&_limit=3`)
-        .then( response =>{
-            this.setState({
-                teams,
-                related:response.data
-            })
-        })
-    })
+    //     axios.get(`${URL}/videos?q=${this.state.teams.city}&_limit=3`)
+    //     .then( response =>{
+    //         this.setState({
+    //             teams,
+    //             related:response.data
+    //         })
+    //     })
+    // })
 }
 
   render() {
