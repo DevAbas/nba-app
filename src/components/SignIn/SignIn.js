@@ -51,16 +51,44 @@ class SignIn extends Component {
       ...newFormData[element.id]
     }
     newElement.value = element.event.target.value;
+    if(element.blur) {
+      const validData = this.validate(newElement);
+      newElement.valid = validData[0];
+      newElement.validationMessage = validData[1]
+    }
+    newElement.touched = element.blur;
     newFormData[element.id] = newElement;
-
-    console.log(newElement)
-
     this.setState({
       formData: newFormData
     })
   }
 
+  validate = (element) => {
+    let error = [true, ''];
+
+    if(element.validation.email) {
+      const valid = /\S+@\S+\.\S+/.test(element.value);
+      const message = `${!valid ? 'Must be a valid email' : ''}`
+      error = !valid ? [false, message] : error;
+    }
+
+    if(element.validation.password) {
+      const valid = element.value.length >= 5;
+      const message = `${!valid ? 'Must be greater than 5' : ''}`
+      error = !valid ? [false, message] : error;
+    }
+
+    if(element.validation.required) {
+      const valid = element.value.trim() !== '';
+      const message = `${!valid ? 'This field is reuqired' : ''}`;
+      error = !valid ? [false, message] : error
+    }
+
+    return error;
+  } 
+
   render() {
+    console.log(this.state.formData)
     return (
       <div className={styles.logContainer}>
         <form>
