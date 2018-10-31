@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import { URL } from '../../../../config';
+import { firebaseDB, firebaseTeams, firebaseLooper } from '../../../../firebase'
 import Header from './Header';
 import styles from '../../articles.module.css';
 
@@ -12,19 +11,33 @@ class NewsArticle extends Component {
   }
 
   componentWillMount = () => {
-    const articelId = this.props.match.params.id;
-    axios.get(`${URL}/articles?id=${articelId}`)
-      .then(response => {
-        let article = response.data[0];
+    const articleId = this.props.match.params.id;
 
-        axios.get(`${URL}/teams?id=${article.team}`)
-          .then(response => {
+    firebaseDB.ref(`articles/${articleId}`).once('value')
+      .then(snapshot => {
+        let article = snapshot.val();
+
+        firebaseTeams.orderByChild("teamId").equalTo(article.team).once('value')
+          .then(snapshot => {
+            const team = firebaseLooper(snapshot);
             this.setState({
               article,
-              team: response.data 
+              team
             })
           })
       })
+    // axios.get(`${URL}/articles?id=${articelId}`)
+    //   .then(response => {
+    //     let article = response.data[0];
+
+    //     axios.get(`${URL}/teams?id=${article.team}`)
+    //       .then(response => {
+    //         this.setState({
+    //           article,
+    //           team: response.data 
+    //         })
+    //       })
+    //   })
   }
 
   render() {
