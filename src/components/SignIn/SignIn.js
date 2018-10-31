@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import FormFields from '../Widgets/FormFields/FormFields';
+import FormField from '../Widgets/FormFields/FormFields';
 import styles from './Signin.module.css';
 
 class SignIn extends Component {
@@ -43,11 +43,38 @@ class SignIn extends Component {
     }
   }
 
+  updateForm = (element) => {
+    const newFormData = {
+      ...this.state.formData
+    }
+    const newElement = {
+      ...newFormData[element.id]
+    }
+    newElement.value = element.event.target.value;
+    newFormData[element.id] = newElement;
+
+    console.log(newElement)
+
+    this.setState({
+      formData: newFormData
+    })
+  }
+
   render() {
     return (
       <div className={styles.logContainer}>
         <form>
-          <FormFields />
+          <h2>Register / Log in</h2>
+          <FormField 
+            id={'email'}
+            formdata={this.state.formData.email}
+            change={(element) => this.updateForm(element)}
+          />
+          <FormField 
+            id={'password'}
+            formdata={this.state.formData.password}
+            change={(element) => this.updateForm(element)}
+          />
         </form>
       </div>
     )
