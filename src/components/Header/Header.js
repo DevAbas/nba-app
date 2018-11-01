@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-
+import { Link, withRouter } from 'react-router-dom';
+import { firebase } from '../../firebase';
 import SideDrawer from '../SideDrawer/SideDrawer';
 import DrawerToggleButton from '../SideDrawer/DrawerToggleButton';
 import Backdrop from '../Backdrop/Backdrop';
@@ -29,30 +29,77 @@ class Header extends Component {
     </Link>
   )
 
+  element = (item, i) => (
+    <li key={i}>
+      <Link to={`${item.link}`}>{item.text}</Link>
+    </li>
+  )
+
+  restricted = (item, i) => {
+    let template = null;
+
+    if(this.props.user === null && item.login) {
+      template = this.element(item, i)
+    }
+
+    if(this.props.user !== null && !item.login) {
+      if(item.link === '/sign-out') {
+        template = (
+          <li 
+            key={i}
+            onClick={() => {
+              firebase.auth().signOut()
+                .then(() => {
+                  this.props.history.push('/')
+                })
+            }}
+          >
+            {item.text}
+          </li>
+        )
+      } else {
+        template = this.element(item, i)
+      }
+    }
+
+    return template;
+  }
+
   
   render() {
     const menuItems = [
         {
           text: 'Home',
-          link: '/'
+          link: '/',
+          login: ''
         },
         {
           text: 'News',
-          link: '/news'
+          link: '/news',
+          login: ''
         },
         {
           text: 'Videos',
-          link: '/videos'
+          link: '/videos',
+          login: ''
+        },
+        {
+          text: 'Dashboard',
+          link: '/dashboard',
+          login: false
         },
         {
           text: 'Sign In',
-          link: 'sign-in'
+          link: 'sign-in',
+          login: true
         },
         {
           text: 'Sign Out',
-          link: 'sign-out'
+          link: 'sign-out',
+          login: false
         }
       ]
+      console.log(this.props);
     return (
       <header className={styles.header}>
         <div className="container">
@@ -64,9 +111,9 @@ class Header extends Component {
               <nav className={styles.navbar}>
                 <ul>
                   { menuItems.map((item, i) => (
-                    <li key={i}>
-                      <Link to={`${item.link}`}>{item.text}</Link>
-                    </li>
+                    item.login !== '' ? 
+                      this.restricted(item, i) :
+                      this.element(item, i)
                   )) }
                 </ul>
               </nav>
@@ -74,11 +121,18 @@ class Header extends Component {
             </div>
           </div>
         </div>
-        <SideDrawer menuItems={menuItems} show={this.state.showSideMenu} />
-        <Backdrop show={this.state.showSideMenu} close={this.closeDrawerClickHandler} />
+        <SideDrawer 
+          user={this.props.user}
+          menuItems={menuItems} 
+          show={this.state.showSideMenu} 
+        />
+        <Backdrop 
+          show={this.state.showSideMenu} 
+          close={this.closeDrawerClickHandler} 
+        />
       </header>
     )
   }
 };
 
-export default Header;
+export default withRouter(Header);
