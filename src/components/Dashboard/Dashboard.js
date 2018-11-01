@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import FormField from '../Widgets/FormFields/FormFields';
 import styles from './Dashboard.module.css';
+import { firebaseTeams } from '../../firebase';
+import { Editor } from 'react-draft-wysiwyg';
+import { EditorState, convertFromRaw, convertToRaw } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
 
 class Dashboard extends Component {
 
   state = {
+    editorState: EditorState.createEmpty(),
     postError: '',
     loading: false,
     formData: {
@@ -37,18 +42,83 @@ class Dashboard extends Component {
         valid: false,
         touched: false,
         validationMessage: ''
+      },
+      body: {
+        element: 'texteditor',
+        value: '',
+        valid: true
+      },
+      team:{
+        element:'select',
+        value:'',
+        config:{
+            name:'teams_input',
+            options:[]
+        },
+        validation:{
+            required:true
+        },
+        valid:false,
+        touched:false,
+        validationMessage:''
       }
     }
   }
 
-  updateForm = (element) => {
+  componentDidMount(){
+    this.loadTeams()}
+
+  loadTeams = () => {
+    firebaseTeams.once('value')
+    .then((snapshot)=>{
+        let team = [];
+
+        snapshot.forEach((childSnapshot)=>{
+            team.push({
+                id: childSnapshot.val().teamId,
+                name: childSnapshot.val().city
+            })
+        })
+
+        const newFormdata = {...this.state.formData};
+        const newElement = {...newFormdata['team'] };
+
+        newElement.config.options = team;
+        newFormdata['team'] = newElement;
+
+        this.setState({
+            formData: newFormdata
+        })
+    })
+
+  }
+
+  onEditorStateChange = (editorState) => {
+
+    let contentState = editorState.getCurrentContent();
+    let rawState = convertToRaw(contentState)
+
+    let html = stateToHTML(contentState)
+
+    this.updateForm({id:'body'},html)
+
+    this.setState({
+        editorState
+    })
+  }
+
+  updateForm = (element, content = '') => {
     const newFormData = {
       ...this.state.formData
     }
     const newElement = {
       ...newFormData[element.id]
     }
-    newElement.value = element.event.target.value;
+    if(content === '') {
+      newElement.value = element.event.target.value;
+    } else {
+      newElement.value = content
+    }
     if(element.blur) {
       const validData = this.validate(newElement);
       newElement.valid = validData[0];
@@ -86,6 +156,8 @@ class Dashboard extends Component {
     for(let key in this.state.formData) {
       formIsValid = this.state.formData[key].valid && formIsValid;
     }
+
+    console.log(dataToSubmit)
 
     if(formIsValid) {
       console.log('SUBMIT POST')
@@ -127,6 +199,20 @@ class Dashboard extends Component {
             formdata={this.state.formData.title}
             change={(element) => this.updateForm(element)}
           />
+
+          <Editor
+              editorState={this.state.editorState}
+              wrapperClassName="myEditor-wrapper"
+              editorClassName="myEditor-editor"
+              onEditorStateChange={this.onEditorStateChange}
+          />
+
+          <FormField
+              id={'team'}
+              formdata={this.state.formData.team}
+              change={(element)=>this.updateForm(element)}
+          />
+
           { this.submitButton() }
           { this.showError() }
         </form>
