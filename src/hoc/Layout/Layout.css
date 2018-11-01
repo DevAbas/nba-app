@@ -23,6 +23,7 @@ a {
 .media-wrapper {
   padding: 17px;
   box-shadow: 3px 3px 30px #333;
+  overflow: hidden;
 }
 
 .media {

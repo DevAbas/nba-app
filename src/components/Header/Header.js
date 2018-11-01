@@ -10,7 +10,39 @@ import styles from './header.module.css';
 class Header extends Component {
 
   state = {
-    showSideMenu: false
+    showSideMenu: false,
+    menuItems: [
+      {
+        text: 'Home',
+        link: '/',
+        login: ''
+      },
+      {
+        text: 'News',
+        link: '/news',
+        login: ''
+      },
+      {
+        text: 'Videos',
+        link: '/videos',
+        login: ''
+      },
+      {
+        text: 'Dashboard',
+        link: '/dashboard',
+        login: false
+      },
+      {
+        text: 'Sign In',
+        link: '/sign-in',
+        login: true
+      },
+      {
+        text: 'Sign Out',
+        link: '/sign-out',
+        login: false
+      }
+    ]
   }
 
   sideDrawerClickHandler = () => {
@@ -35,71 +67,46 @@ class Header extends Component {
     </li>
   )
 
-  restricted = (item, i) => {
+  restricted = (item,i) => {
     let template = null;
 
-    if(this.props.user === null && item.login) {
-      template = this.element(item, i)
+    if( this.props.user === null && item.login ){
+        template = this.element(item,i)
     }
 
-    if(this.props.user !== null && !item.login) {
-      if(item.link === '/sign-out') {
-        template = (
-          <li 
-            key={i}
-            onClick={() => {
-              firebase.auth().signOut()
-                .then(() => {
-                  this.props.history.push('/')
-                })
-            }}
-          >
-            {item.text}
-          </li>
-        )
-      } else {
-        template = this.element(item, i)
-      }
+    if(this.props.user !== null && !item.login){
+        if(item.link === '/sign-out'){
+            template = (
+              <li key={i} 
+                  onClick={()=>{
+                      firebase.auth().signOut()
+                      .then(()=>{
+                          this.props.history.push("/")
+                      })
+                    }}
+                  >
+                  {item.text}
+              </li>
+            )
+
+        } else {
+            template = this.element(item,i)
+        }
     }
 
     return template;
   }
 
+  showItems = () => {
+    return this.state.menuItems.map( (item,i) =>{
+        return item.login !== '' ?
+            this.restricted(item,i)
+        :
+            this.element(item,i)
+    } )
+  }
   
   render() {
-    const menuItems = [
-        {
-          text: 'Home',
-          link: '/',
-          login: ''
-        },
-        {
-          text: 'News',
-          link: '/news',
-          login: ''
-        },
-        {
-          text: 'Videos',
-          link: '/videos',
-          login: ''
-        },
-        {
-          text: 'Dashboard',
-          link: '/dashboard',
-          login: false
-        },
-        {
-          text: 'Sign In',
-          link: 'sign-in',
-          login: true
-        },
-        {
-          text: 'Sign Out',
-          link: 'sign-out',
-          login: false
-        }
-      ]
-      console.log(this.props);
     return (
       <header className={styles.header}>
         <div className="container">
@@ -110,11 +117,7 @@ class Header extends Component {
             <div className="col-md-10">
               <nav className={styles.navbar}>
                 <ul>
-                  { menuItems.map((item, i) => (
-                    item.login !== '' ? 
-                      this.restricted(item, i) :
-                      this.element(item, i)
-                  )) }
+                  { this.showItems() }
                 </ul>
               </nav>
               <DrawerToggleButton drawerToggle={this.sideDrawerClickHandler} />
@@ -123,7 +126,7 @@ class Header extends Component {
         </div>
         <SideDrawer 
           user={this.props.user}
-          menuItems={menuItems} 
+          menuItems={this.state.menuItems} 
           show={this.state.showSideMenu} 
         />
         <Backdrop 
