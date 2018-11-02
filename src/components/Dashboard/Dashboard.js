@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import FormField from '../Widgets/FormFields/FormFields';
 import styles from './Dashboard.module.css';
-import { firebaseTeams } from '../../firebase';
+import { firebaseTeams, firebaseArticles, firebase } from '../../firebase';
 import { Editor } from 'react-draft-wysiwyg';
 import { EditorState, convertFromRaw, convertToRaw } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
+import Uploader from '../Widgets/FileUploader/FileUploader';
 
 class Dashboard extends Component {
 
@@ -47,6 +48,11 @@ class Dashboard extends Component {
         element: 'texteditor',
         value: '',
         valid: true
+      },
+      image:{
+        element:'image',
+        value:'',
+        valid:true
       },
       team:{
         element:'select',
@@ -157,15 +163,40 @@ class Dashboard extends Component {
       formIsValid = this.state.formData[key].valid && formIsValid;
     }
 
-    console.log(dataToSubmit)
-
-    if(formIsValid) {
-      console.log('SUBMIT POST')
-    } else {
+    if(formIsValid){
       this.setState({
-        postError: 'Something went wrong'
+          loading:true,
+          postError:''
       })
-    }
+
+      firebaseArticles.orderByChild("id")
+      .limitToLast(1).once('value')
+      .then( snapshot => {
+          let articleId = null;
+          snapshot.forEach(childSnapshot=>{
+              articleId = childSnapshot.val().id;
+          });
+
+          dataToSubmit['date'] = firebase.database.ServerValue.TIMESTAMP
+          dataToSubmit['id'] = articleId + 1;
+          dataToSubmit['team'] = parseInt(dataToSubmit['team'],10);
+
+         firebaseArticles.push(dataToSubmit)
+         .then( article => {
+              this.props.history.push(`/articles/${article.key}`)
+         }).catch( e =>{
+             this.setState({
+                 postError: e.message
+             })
+         })
+      })
+
+
+  } else {
+      this.setState({
+          postError: 'Something went wrong'
+      })
+  }
   }
 
   submitButton = () => (
@@ -184,11 +215,20 @@ class Dashboard extends Component {
     )
   }
 
+  storeFilename = (filename) => {
+    this.updateForm({id:'image'},filename)
+  }
+
   render() {
     return (
       <div className={styles.postContainer}>
         <form onSubmit={this.onSubmitForm}>
           <h2>Add post</h2>
+
+          <Uploader 
+            filename={(filename) => this.storeFilename(filename)}
+          />
+
           <FormField 
             id={'author'}
             formdata={this.state.formData.author}
